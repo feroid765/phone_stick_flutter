@@ -12,7 +12,7 @@ class DbProvider {
         'CREATE TABLE stick(id TEXT PRIMARY KEY, name TEXT NOT NULL, light_list TEXT NOT NULL)');
   }
 
-  Future _init() async {
+  Future _connect() async {
     if (db?.isOpen == true) return;
     var databasePath = await getDatabasesPath();
     var fullPath = path.join(databasePath, fileName);
@@ -22,7 +22,7 @@ class DbProvider {
 
   static Future<DbProvider> create() async {
     var result = DbProvider();
-    await result._init();
+    await result._connect();
 
     return result;
   }
