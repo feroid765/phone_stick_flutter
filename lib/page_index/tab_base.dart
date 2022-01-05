@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'my_sticks.dart';
 
 class TabbedPage extends StatefulWidget {
   const TabbedPage({Key? key}) : super(key: key);
@@ -61,7 +62,7 @@ class _TabbedPageState extends State<TabbedPage>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [Text("내 폰광봉"), Text("아직 준비 중입니다.")],
+        children: [MySticksPage(), const Text("아직 준비 중입니다.")],
       ),
     );
   }

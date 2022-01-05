@@ -21,7 +21,7 @@ class DbProvider {
   }
 
   Future<List<Map<String, Object?>>> secureQuery(String query) async {
-    _connect();
+    await _connect();
 
     return await db!.rawQuery(query);
   }
