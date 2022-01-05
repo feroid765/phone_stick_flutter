@@ -10,4 +10,8 @@ class Stick {
       : id = "",
         name = "",
         lightList = [];
+  Stick.fromMap(Map<String, Object?> map)
+      : id = map["id"].toString(),
+        name = map["name"].toString(),
+        lightList = [];
 }
