@@ -20,6 +20,12 @@ class DbProvider {
     db = await openDatabase(fullPath, version: 1, onCreate: _onCreate);
   }
 
+  Future<List<Map<String, Object?>>> secureQuery(String query) async {
+    _connect();
+
+    return await db!.rawQuery(query);
+  }
+
   static Future<DbProvider> create() async {
     var result = DbProvider();
     await result._connect();
