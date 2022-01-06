@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'main_my_sticks.dart';
+import 'add_stick.dart';
 
 class TabbedPage extends StatefulWidget {
   const TabbedPage({Key? key}) : super(key: key);
@@ -64,6 +65,7 @@ class _TabbedPageState extends State<TabbedPage>
         controller: _tabController,
         children: [MySticksPage(), const Text("아직 준비 중입니다.")],
       ),
+      floatingActionButton: _currentIndex == 0 ? FloatingActionButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const AddStickPage()));}, backgroundColor: Colors.blue, child: const Icon(Icons.add),) : null,
     );
   }
 }
