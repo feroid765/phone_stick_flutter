@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'my_sticks.dart';
+import 'main_my_sticks.dart';
 
 class TabbedPage extends StatefulWidget {
   const TabbedPage({Key? key}) : super(key: key);
