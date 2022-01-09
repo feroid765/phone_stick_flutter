@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import '../components/add_list_tile.dart';
 import '../models/light.dart';
@@ -22,6 +23,20 @@ class _AddStickPageState extends State<AddStickPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<Light> _lightList = [];
 
+  final GlobalKey<FormState> _dialogFormKey = GlobalKey<FormState>();
+  Color _pickerColor = const Color.fromRGBO(255, 255, 255, 0);
+
+  void _changeColor(Color color) {
+    setState(() => _pickerColor = color);
+  }
+
+  void _addLight(String name) {
+    Light newLight = Light(name, _pickerColor);
+    setState(() => _lightList.add(newLight));
+  }
+
+  AlertDialog? _alertDialog;
+
   @override
   void initState() {
     super.initState();
@@ -30,29 +45,60 @@ class _AddStickPageState extends State<AddStickPage> {
   @override
   void dispose() {
     super.dispose();
+    _alertDialog = AlertDialog(
+        title: const Text('추가할 색깔 선택하기'),
+        content: Form(
+            key: _dialogFormKey,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text('색깔 이름'),
+                  TextFormField(
+                      decoration: const InputDecoration(
+                          hintText: "캐릭터 이름, 유닛 이름등의 색깔 이름을 입력해주세요!")),
+                  const Divider(),
+                  const Text('색깔 선택'),
+                  Container(
+                      margin: const EdgeInsets.all(10.0),
+                      child: HueRingPicker(
+                          pickerColor: _pickerColor,
+                          onColorChanged: _changeColor))
+                ])));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('폰광봉 만들기'),
-      ),
-      body: Form(
-          key: _formKey,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text('폰광봉 이름'),
-                TextFormField(
-                    decoration:
-                        const InputDecoration(hintText: "폰광봉의 이름을 입력해주세요!")),
-                const Divider(),
-                const Text('색깔 목록'),
-                ListView(
-                    children: _lightList.map((ll) => ll.getWidget()).toList() +
-                        [addListTile(null)])
-              ])),
-    );
+        appBar: AppBar(
+          title: const Text('폰광봉 만들기'),
+        ),
+        body: Container(
+          margin: const EdgeInsets.all(10.0),
+          child: Form(
+              key: _formKey,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text('폰광봉 이름'),
+                    TextFormField(
+                        decoration: const InputDecoration(
+                            hintText: "폰광봉의 이름을 입력해주세요!")),
+                    const Divider(),
+                    const Text('색깔 목록'),
+                    Expanded(
+                        child: ListView(
+                            children: _lightList
+                                    .map((ll) => ll.getWidget())
+                                    .toList() +
+                                [
+                                  addListTile(() async {
+                                    await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            _alertDialog!);
+                                  })
+                                ]))
+                  ])),
+        ));
   }
 }
