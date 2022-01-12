@@ -21,6 +21,8 @@ class AddStickPage extends StatefulWidget {
 
 class _AddStickPageState extends State<AddStickPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _stickName = "";
+  String _lightName = "";
   List<Light> _lightList = [];
 
   final GlobalKey<FormState> _dialogFormKey = GlobalKey<FormState>();
@@ -40,11 +42,6 @@ class _AddStickPageState extends State<AddStickPage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
     _alertDialog = AlertDialog(
         title: const Text('추가할 색깔 선택하기'),
         content: Form(
@@ -55,15 +52,36 @@ class _AddStickPageState extends State<AddStickPage> {
                   const Text('색깔 이름'),
                   TextFormField(
                       decoration: const InputDecoration(
-                          hintText: "캐릭터 이름, 유닛 이름등의 색깔 이름을 입력해주세요!")),
+                          hintText: "캐릭터 이름, 유닛 이름등의 색깔 이름을 입력해주세요!"),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "폰광봉의 이름은 필수로 입력해야 합니다.";
+                        } else {
+                          _lightName = value;
+                          return null;
+                        }
+                      }),
                   const Divider(),
                   const Text('색깔 선택'),
                   Container(
                       margin: const EdgeInsets.all(10.0),
                       child: HueRingPicker(
                           pickerColor: _pickerColor,
-                          onColorChanged: _changeColor))
+                          onColorChanged: _changeColor)),
+                  TextButton(
+                    child: const Text('추가하기'),
+                    onPressed: () {
+                      if (!_formKey.currentState!.validate()) {
+                        _addLight(_lightName);
+                      }
+                    },
+                  )
                 ])));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -81,8 +99,17 @@ class _AddStickPageState extends State<AddStickPage> {
                   children: <Widget>[
                     const Text('폰광봉 이름'),
                     TextFormField(
-                        decoration: const InputDecoration(
-                            hintText: "폰광봉의 이름을 입력해주세요!")),
+                      decoration:
+                          const InputDecoration(hintText: "폰광봉의 이름을 입력해주세요!"),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "폰광봉의 이름은 필수로 입력해야 합니다.";
+                        } else {
+                          _stickName = value;
+                          return null;
+                        }
+                      },
+                    ),
                     const Divider(),
                     const Text('색깔 목록'),
                     Expanded(
