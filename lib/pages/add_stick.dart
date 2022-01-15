@@ -26,9 +26,10 @@ class _AddStickPageState extends State<AddStickPage> {
   List<Light> _lightList = [];
 
   final GlobalKey<FormState> _dialogFormKey = GlobalKey<FormState>();
-  Color _pickerColor = const Color.fromRGBO(255, 255, 255, 0);
+  Color _pickerColor = Color.fromARGB(255, 255, 255, 255);
 
   void _changeColor(Color color) {
+    color = color.withAlpha(255);
     setState(() => _pickerColor = color);
   }
 
@@ -37,7 +38,7 @@ class _AddStickPageState extends State<AddStickPage> {
     setState(() => _lightList.add(newLight));
   }
 
-  AlertDialog? _alertDialog;
+  late AlertDialog _alertDialog;
 
   @override
   void initState() {
@@ -46,9 +47,10 @@ class _AddStickPageState extends State<AddStickPage> {
         title: const Text('추가할 색깔 선택하기'),
         content: Form(
             key: _dialogFormKey,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
+            child: SingleChildScrollView(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
                   const Text('색깔 이름'),
                   TextFormField(
                       decoration: const InputDecoration(
@@ -67,16 +69,18 @@ class _AddStickPageState extends State<AddStickPage> {
                       margin: const EdgeInsets.all(10.0),
                       child: HueRingPicker(
                           pickerColor: _pickerColor,
+                          enableAlpha: false,
                           onColorChanged: _changeColor)),
                   TextButton(
                     child: const Text('추가하기'),
                     onPressed: () {
-                      if (!_formKey.currentState!.validate()) {
+                      if (_dialogFormKey.currentState!.validate()) {
                         _addLight(_lightName);
+                        Navigator.pop(context);
                       }
                     },
                   )
-                ])));
+                ]))));
   }
 
   @override
@@ -122,7 +126,7 @@ class _AddStickPageState extends State<AddStickPage> {
                                     await showDialog(
                                         context: context,
                                         builder: (BuildContext context) =>
-                                            _alertDialog!);
+                                            _alertDialog);
                                   })
                                 ]))
                   ])),
