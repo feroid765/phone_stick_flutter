@@ -9,7 +9,7 @@ class DbProvider {
 
   static Future _onCreate(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE stick(id TEXT PRIMARY KEY, name TEXT NOT NULL, light_list TEXT NOT NULL)');
+        'CREATE TABLE stick(id TEXT PRIMARY KEY, name TEXT NOT NULL, light_list TEXT, type TEXT NOT NULL)');
   }
 
   Future _connect() async {
@@ -20,10 +20,16 @@ class DbProvider {
     db = await openDatabase(fullPath, version: 1, onCreate: _onCreate);
   }
 
-  Future<List<Map<String, Object?>>> secureQuery(String query) async {
+  Future<List<Map<String, Object?>>> secureSelectQuery(String query) async {
     await _connect();
 
     return await db!.rawQuery(query);
+  }
+
+  Future secureInsertQuery(String query, List<dynamic> parameters) async {
+    await _connect();
+
+    await db!.transaction((txn) => txn.rawInsert(query, parameters));
   }
 
   static Future<DbProvider> create() async {
