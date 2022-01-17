@@ -38,6 +38,24 @@ class _AddStickPageState extends State<AddStickPage> {
     setState(() => _lightList.add(newLight));
   }
 
+  String? _onLightValidate(String? value) {
+    if (value == null || value.isEmpty) {
+      return "색깔의 이름은 필수로 입력해야 합니다.";
+    } else {
+      _lightName = value;
+      return null;
+    }
+  }
+
+  String? _onStickValidate(String? value) {
+    if (value == null || value.isEmpty) {
+      return "폰광봉의 이름은 필수로 입력해야 합니다.";
+    } else {
+      _stickName = value;
+      return null;
+    }
+  }
+
   late AlertDialog _alertDialog;
 
   @override
@@ -55,14 +73,7 @@ class _AddStickPageState extends State<AddStickPage> {
                   TextFormField(
                       decoration: const InputDecoration(
                           hintText: "캐릭터 이름, 유닛 이름등의 색깔 이름을 입력해주세요!"),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "폰광봉의 이름은 필수로 입력해야 합니다.";
-                        } else {
-                          _lightName = value;
-                          return null;
-                        }
-                      }),
+                      validator: _onLightValidate),
                   const Divider(),
                   const Text('색깔 선택'),
                   Container(
@@ -105,14 +116,7 @@ class _AddStickPageState extends State<AddStickPage> {
                     TextFormField(
                       decoration:
                           const InputDecoration(hintText: "폰광봉의 이름을 입력해주세요!"),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "폰광봉의 이름은 필수로 입력해야 합니다.";
-                        } else {
-                          _stickName = value;
-                          return null;
-                        }
-                      },
+                      validator: _onStickValidate,
                     ),
                     const Divider(),
                     const Text('색깔 목록'),
