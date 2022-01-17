@@ -56,12 +56,8 @@ class _AddStickPageState extends State<AddStickPage> {
     }
   }
 
-  late AlertDialog _alertDialog;
-
-  @override
-  void initState() {
-    super.initState();
-    _alertDialog = AlertDialog(
+  AlertDialog _alertDialogBuilder(BuildContext context) {
+    return AlertDialog(
         title: const Text('추가할 색깔 선택하기'),
         content: Form(
             key: _dialogFormKey,
@@ -92,6 +88,13 @@ class _AddStickPageState extends State<AddStickPage> {
                     },
                   )
                 ]))));
+  }
+
+  late AlertDialog _alertDialog;
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -129,8 +132,7 @@ class _AddStickPageState extends State<AddStickPage> {
                                   addListTile(() async {
                                     await showDialog(
                                         context: context,
-                                        builder: (BuildContext context) =>
-                                            _alertDialog);
+                                        builder: _alertDialogBuilder);
                                   })
                                 ]))
                   ])),
