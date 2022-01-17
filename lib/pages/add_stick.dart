@@ -90,8 +90,6 @@ class _AddStickPageState extends State<AddStickPage> {
                 ]))));
   }
 
-  late AlertDialog _alertDialog;
-
   @override
   void initState() {
     super.initState();
