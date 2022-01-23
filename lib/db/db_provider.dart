@@ -1,5 +1,6 @@
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
+import 'package:tuple/tuple.dart';
 
 class DbProvider {
   static Database? db;
@@ -30,6 +31,15 @@ class DbProvider {
     await _connect();
 
     await db!.transaction((txn) => txn.rawInsert(query, parameters));
+  }
+
+  Future secureInsertQueries(
+      List<Tuple2<String, dynamic>> queryParamPairs) async {
+    await _connect();
+
+    await db!.transaction((txn) => Future.wait(queryParamPairs.map((element) {
+          return txn.rawInsert(element.item1, element.item2);
+        })));
   }
 
   static Future<DbProvider> create() async {
