@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:phone_stick_flutter/db/db_provider.dart';
+import 'package:phone_stick_flutter/db/db_helper.dart';
 
 import '../components/add_list_tile.dart';
 import '../models/light.dart';
+import '../models/stick.dart';
 
 extension LightToWidget on Light {
   ListTile getWidget() {
@@ -21,12 +24,12 @@ class AddStickPage extends StatefulWidget {
 
 class _AddStickPageState extends State<AddStickPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final Stick _stick = Stick.asDefaultValue();
   String _stickName = "";
   String _lightName = "";
-  List<Light> _lightList = [];
 
   final GlobalKey<FormState> _dialogFormKey = GlobalKey<FormState>();
-  Color _pickerColor = Color.fromARGB(255, 255, 255, 255);
+  Color _pickerColor = const Color.fromARGB(255, 255, 255, 255);
 
   void _changeColor(Color color) {
     color = color.withAlpha(255);
@@ -35,7 +38,7 @@ class _AddStickPageState extends State<AddStickPage> {
 
   void _addLight(String name) {
     Light newLight = Light(name, _pickerColor);
-    setState(() => _lightList.add(newLight));
+    setState(() => _stick.lightList.add(newLight));
   }
 
   String? _onLightValidate(String? value) {
@@ -79,7 +82,7 @@ class _AddStickPageState extends State<AddStickPage> {
                           enableAlpha: false,
                           onColorChanged: _changeColor)),
                   TextButton(
-                    child: const Text('추가하기'),
+                    child: const Text('색깔 추가하기'),
                     onPressed: () {
                       if (_dialogFormKey.currentState!.validate()) {
                         _addLight(_lightName);
@@ -88,6 +91,12 @@ class _AddStickPageState extends State<AddStickPage> {
                     },
                   )
                 ]))));
+  }
+
+  void _onAddBtnPressed() {
+    var dbProvider = DbProvider();
+    dbProvider.insertStick(_stick);
+    Navigator.pop(context);
   }
 
   @override
@@ -103,9 +112,12 @@ class _AddStickPageState extends State<AddStickPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('폰광봉 만들기'),
-        ),
+        appBar: AppBar(title: const Text('폰광봉 만들기'), actions: <Widget>[
+          TextButton(
+            child: const Text('완료'),
+            onPressed: _onAddBtnPressed,
+          )
+        ]),
         body: Container(
           margin: const EdgeInsets.all(10.0),
           child: Form(
@@ -123,7 +135,7 @@ class _AddStickPageState extends State<AddStickPage> {
                     const Text('색깔 목록'),
                     Expanded(
                         child: ListView(
-                            children: _lightList
+                            children: _stick.lightList
                                     .map((ll) => ll.getWidget())
                                     .toList() +
                                 [
@@ -132,7 +144,7 @@ class _AddStickPageState extends State<AddStickPage> {
                                         context: context,
                                         builder: _alertDialogBuilder);
                                   })
-                                ]))
+                                ])),
                   ])),
         ));
   }
