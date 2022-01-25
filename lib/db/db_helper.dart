@@ -1,5 +1,5 @@
-import 'dart:convert';
-import '../models/light.dart';
+import 'package:tuple/tuple.dart';
+
 import '../models/stick.dart';
 import 'db_provider.dart';
 
@@ -10,8 +10,18 @@ extension DbHelper on DbProvider {
   }
 
   Future insertStick(Stick stick) async {
-    await secureInsertQuery(
-        "INSERT INTO stick(id, name, light_list, type) VALUES (?, ?, ?, ?)",
-        [stick.id, stick.name, jsonEncode(stick.lightList), stick.type]);
+    List<Tuple2<String, dynamic>> queryParamPairs = [];
+
+    queryParamPairs.add(Tuple2(
+        "INSERT INTO stick(id, name, type) VALUES (?, ?, ?)",
+        [stick.id, stick.name, stick.type]));
+
+    for (var idx = 0; idx < stick.lightList.length; idx++) {
+      var light = stick.lightList[idx];
+      queryParamPairs.add(Tuple2(
+          "INSERT INTO light(stick_id, index, color, name) VALUES (?, ?, ?, ?)",
+          [stick.id, idx, light.color.toString(), light.name]));
+    }
+    await secureInsertQueries(queryParamPairs);
   }
 }
