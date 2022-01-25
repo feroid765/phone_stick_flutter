@@ -11,6 +11,9 @@ class DbProvider {
   static Future _onCreate(Database db, int version) async {
     await db.execute(
         'CREATE TABLE stick(id TEXT PRIMARY KEY, name TEXT NOT NULL, light_list TEXT, type TEXT NOT NULL)');
+    await db.execute(
+        'CREATE TABLE light(stick_id TEXT REFERENCES stick(id), index INT, color TEXT, name TEXT, PRIMARY KEY(stick_id, index))');
+    await db.execute('CREATE INDEX light_name_index ON light(stick_id)');
   }
 
   Future _connect() async {
