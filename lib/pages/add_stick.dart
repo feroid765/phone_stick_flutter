@@ -25,7 +25,6 @@ class AddStickPage extends StatefulWidget {
 class _AddStickPageState extends State<AddStickPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Stick _stick = Stick.asDefaultValue();
-  String _stickName = "";
   String _lightName = "";
 
   final GlobalKey<FormState> _dialogFormKey = GlobalKey<FormState>();
@@ -54,7 +53,7 @@ class _AddStickPageState extends State<AddStickPage> {
     if (value == null || value.isEmpty) {
       return "폰광봉의 이름은 필수로 입력해야 합니다.";
     } else {
-      _stickName = value;
+      _stick.name = value;
       return null;
     }
   }
