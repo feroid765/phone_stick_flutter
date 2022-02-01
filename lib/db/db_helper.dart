@@ -1,27 +1,51 @@
-import 'package:tuple/tuple.dart';
+import 'package:flutter/material.dart';
 
 import '../models/stick.dart';
+import '../models/light.dart';
 import 'db_provider.dart';
 
-extension DbHelper on DbProvider {
-  Future<List<Stick>> getStickAbstractions() async {
-    var queryResult = await secureSelectQuery("SELECT id, name FROM stick");
-    return queryResult.map((single) => (Stick.fromMap(single))).toList();
+extension DbHelperOnSticks on DbProvider {
+  Future<List<Stick>> getSticks({bool includeLights = false}) async {
+    if (includeLights) {
+      throw Exception("Not Implemented. : getSticks with Lights");
+    }
+
+    var db = await getDb();
+    final List<Map<String, dynamic>> maps =
+        await db.query('sticks', columns: ['id', 'name', 'type']);
+
+    return List.generate(maps.length, (i) {
+      return Stick(
+          id: maps[i]['id'],
+          name: maps[i]['name'],
+          type: maps[i]['type'],
+          lightList: []);
+    });
   }
 
   Future insertStick(Stick stick) async {
-    List<Tuple2<String, dynamic>> queryParamPairs = [];
+    var db = await getDb();
 
-    queryParamPairs.add(Tuple2(
-        "INSERT INTO stick(id, name, type) VALUES (?, ?, ?)",
-        [stick.id, stick.name, stick.type]));
+    await db.transaction((txn) async {
+      await txn.insert('sticks', stick.toMap());
+      var lightQueryOpers =
+          stick.lightList.map((light) => txn.insert('lights', light.toMap()));
+      Future.wait(lightQueryOpers);
+    });
+  }
+}
 
-    for (var idx = 0; idx < stick.lightList.length; idx++) {
-      var light = stick.lightList[idx];
-      queryParamPairs.add(Tuple2(
-          "INSERT INTO light(stick_id, index, color, name) VALUES (?, ?, ?, ?)",
-          [stick.id, idx, light.color.toString(), light.name]));
-    }
-    await secureInsertQueries(queryParamPairs);
+extension DbHelperOnLights on DbProvider {
+  Future<List<Light>> getLightsByStickId({required String stickId}) async {
+    var db = await getDb();
+    final List<Map<String, dynamic>> maps =
+        await db.query('lights', where: '"stick_id" = ?', whereArgs: [stickId]);
+    return List.generate(maps.length, (i) {
+      return Light(
+          stickId: maps[i]['stick_id'],
+          name: maps[i]['name'],
+          index: maps[i]['index'],
+          color: Color(maps[i]['color']));
+    });
   }
 }

@@ -1,4 +1,5 @@
 import 'light.dart';
+import 'package:uuid/uuid.dart';
 
 class Stick {
   String id;
@@ -6,15 +7,19 @@ class Stick {
   List<Light> lightList;
   String type;
 
-  Stick(this.id, this.name, this.lightList, this.type);
+  Stick(
+      {required this.id,
+      required this.name,
+      required this.lightList,
+      required this.type});
+
   Stick.asDefaultValue()
-      : id = "",
+      : id = const Uuid().v4(),
         name = "",
         lightList = [],
         type = "";
-  Stick.fromMap(Map<String, Object?> map)
-      : id = map["id"].toString(),
-        name = map["name"].toString(),
-        lightList = [],
-        type = "";
+
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'name': name, 'type': type};
+  }
 }

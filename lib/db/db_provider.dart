@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
-import 'package:tuple/tuple.dart';
 
 class DbProvider {
   static Database? db;
@@ -12,7 +12,7 @@ class DbProvider {
     await db.execute(
         'CREATE TABLE stick(id TEXT PRIMARY KEY, name TEXT NOT NULL, type TEXT NOT NULL)');
     await db.execute(
-        'CREATE TABLE light(stick_id TEXT REFERENCES stick(id), index INT, color TEXT, name TEXT, PRIMARY KEY(stick_id, index))');
+        'CREATE TABLE light(stick_id TEXT REFERENCES stick(id), index INT NOT NULL, color INT NOT NULL, name TEXT NOT NULL, PRIMARY KEY(stick_id, index))');
     await db.execute('CREATE INDEX light_name_index ON light(stick_id)');
   }
 
@@ -24,31 +24,8 @@ class DbProvider {
     db = await openDatabase(fullPath, version: 1, onCreate: _onCreate);
   }
 
-  Future<List<Map<String, Object?>>> secureSelectQuery(String query) async {
+  Future<Database> getDb() async {
     await _connect();
-
-    return await db!.rawQuery(query);
-  }
-
-  Future secureInsertQuery(String query, List<dynamic> parameters) async {
-    await _connect();
-
-    await db!.transaction((txn) => txn.rawInsert(query, parameters));
-  }
-
-  Future secureInsertQueries(
-      List<Tuple2<String, dynamic>> queryParamPairs) async {
-    await _connect();
-
-    await db!.transaction((txn) => Future.wait(queryParamPairs.map((element) {
-          return txn.rawInsert(element.item1, element.item2);
-        })));
-  }
-
-  static Future<DbProvider> create() async {
-    var result = DbProvider();
-    await result._connect();
-
-    return result;
+    return db!;
   }
 }

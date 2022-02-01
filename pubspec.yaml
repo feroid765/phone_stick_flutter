@@ -33,7 +33,7 @@ dependencies:
   font_awesome_flutter: ^9.2.0
   sqflite: ^2.0.1
   flutter_colorpicker: ^1.0.3
-  tuple: ^2.0.0
+  uuid: ^3.0.5
 
 dev_dependencies:
   flutter_test:

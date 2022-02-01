@@ -2,9 +2,23 @@ import 'package:flutter/material.dart';
 import '../db/db_provider.dart';
 import '../db/db_helper.dart';
 import '../models/stick.dart';
+import '../models/light.dart';
+import 'stick_core.dart';
 
-// ignore: use_key_in_widget_constructors
+extension LightToWidget on Stick {
+  ListTile getWidget(BuildContext context) {
+    return ListTile(
+      title: Text(name),
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => StickView(stick: this)));
+      },
+    );
+  }
+}
+
 class MySticksPage extends StatefulWidget {
+  const MySticksPage({Key? key}) : super(key: key);
   @override
   _MySticksPageState createState() => _MySticksPageState();
 }
@@ -19,7 +33,7 @@ class _MySticksPageState extends State<MySticksPage>
 
   void _getSticks() async {
     var dbProvider = DbProvider();
-    var result = await dbProvider.getStickAbstractions();
+    var result = await dbProvider.getSticks();
     setState(() {
       sticks = result;
     });
