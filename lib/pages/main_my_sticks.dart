@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../db/db_provider.dart';
+
 import '../db/db_helper.dart';
+import '../db/db_provider.dart';
 import '../models/stick.dart';
-import '../models/light.dart';
 import 'stick_core.dart';
 
 extension LightToWidget on Stick {
@@ -20,18 +20,17 @@ extension LightToWidget on Stick {
 class MySticksPage extends StatefulWidget {
   const MySticksPage({Key? key}) : super(key: key);
   @override
-  _MySticksPageState createState() => _MySticksPageState();
+  MySticksPageState createState() => MySticksPageState();
 }
 
-class _MySticksPageState extends State<MySticksPage>
-    with AutomaticKeepAliveClientMixin<MySticksPage> {
+class MySticksPageState extends State<MySticksPage> {
   List<Stick> sticks = [];
 
   List<Widget> _getListItems() {
     return sticks.map((stick) => Text(stick.name)).toList();
   }
 
-  void _getSticks() async {
+  void getSticks() async {
     var dbProvider = DbProvider();
     var result = await dbProvider.getSticks();
     setState(() {
@@ -40,17 +39,13 @@ class _MySticksPageState extends State<MySticksPage>
   }
 
   @override
-  bool get wantKeepAlive => true;
-
-  @override
   void initState() {
     super.initState();
-    _getSticks();
+    getSticks();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return ListView(children: _getListItems());
   }
 }

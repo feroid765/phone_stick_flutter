@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:phone_stick_flutter/db/db_provider.dart';
 import 'package:phone_stick_flutter/db/db_helper.dart';
+import 'package:phone_stick_flutter/db/db_provider.dart';
 
 import '../components/add_list_tile.dart';
 import '../models/light.dart';
@@ -38,7 +38,7 @@ class _AddStickPageState extends State<AddStickPage> {
   void _addLight(String name) {
     Light newLight = Light(
         stickId: _stick.id,
-        index: _stick.lightList.length,
+        idx: _stick.lightList.length,
         name: name,
         color: _pickerColor);
     setState(() => _stick.lightList.add(newLight));
@@ -97,9 +97,11 @@ class _AddStickPageState extends State<AddStickPage> {
   }
 
   void _onAddBtnPressed() {
-    var dbProvider = DbProvider();
-    dbProvider.insertStick(_stick);
-    Navigator.pop(context);
+    if (_formKey.currentState!.validate()) {
+      var dbProvider = DbProvider();
+      dbProvider.insertStick(_stick);
+      Navigator.pop(context);
+    }
   }
 
   @override

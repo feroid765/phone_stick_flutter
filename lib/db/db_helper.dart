@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/stick.dart';
 import '../models/light.dart';
+import '../models/stick.dart';
 import 'db_provider.dart';
 
 extension DbHelperOnSticks on DbProvider {
@@ -44,7 +44,7 @@ extension DbHelperOnLights on DbProvider {
       return Light(
           stickId: maps[i]['stick_id'],
           name: maps[i]['name'],
-          index: maps[i]['index'],
+          idx: maps[i]['index'],
           color: Color(maps[i]['color']));
     });
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 
@@ -10,10 +11,10 @@ class DbProvider {
 
   static Future _onCreate(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE stick(id TEXT PRIMARY KEY, name TEXT NOT NULL, type TEXT NOT NULL)');
+        'CREATE TABLE sticks(id TEXT PRIMARY KEY, name TEXT NOT NULL, type TEXT NOT NULL)');
     await db.execute(
-        'CREATE TABLE light(stick_id TEXT REFERENCES stick(id), index INT NOT NULL, color INT NOT NULL, name TEXT NOT NULL, PRIMARY KEY(stick_id, index))');
-    await db.execute('CREATE INDEX light_name_index ON light(stick_id)');
+        'CREATE TABLE lights(stick_id TEXT REFERENCES stick(id), idx INT NOT NULL, color INT NOT NULL, name TEXT NOT NULL, PRIMARY KEY(stick_id, idx))');
+    await db.execute('CREATE INDEX light_name_index ON lights(stick_id)');
   }
 
   Future _connect() async {

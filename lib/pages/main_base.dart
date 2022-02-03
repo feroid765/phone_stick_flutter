@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'main_my_sticks.dart';
+
 import 'add_stick.dart';
+import 'main_my_sticks.dart';
 
 class TabbedPage extends StatefulWidget {
   const TabbedPage({Key? key}) : super(key: key);
@@ -11,11 +12,13 @@ class TabbedPage extends StatefulWidget {
 
 class _TabbedPageState extends State<TabbedPage>
     with SingleTickerProviderStateMixin {
-  final List<String> tabTitles = ['내 폰광봉', '인터넷에서 폰광봉 찾기'];
-  final List<Widget> tabIcons = [
+  final List<String> _tabTitles = ['내 폰광봉', '인터넷에서 폰광봉 찾기'];
+  final List<Widget> _tabIcons = [
     const FaIcon(FontAwesomeIcons.magic),
     const Icon(Icons.public)
   ];
+  final GlobalKey<MySticksPageState> _mySticksPageState =
+      GlobalKey<MySticksPageState>();
 
   int _currentIndex = 0;
 
@@ -23,8 +26,8 @@ class _TabbedPageState extends State<TabbedPage>
 
   List<Tab> getTabs() {
     List<Tab> result = [];
-    for (var i = 0; i < tabTitles.length; i++) {
-      result.add(Tab(text: tabTitles[i], icon: tabIcons[i]));
+    for (var i = 0; i < _tabTitles.length; i++) {
+      result.add(Tab(text: _tabTitles[i], icon: _tabIcons[i]));
     }
     return result;
   }
@@ -38,7 +41,7 @@ class _TabbedPageState extends State<TabbedPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: tabTitles.length);
+    _tabController = TabController(vsync: this, length: _tabTitles.length);
     _tabController.addListener(_handleTabSelection);
   }
 
@@ -52,7 +55,7 @@ class _TabbedPageState extends State<TabbedPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tabTitles[_currentIndex]),
+        title: Text(_tabTitles[_currentIndex]),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.blue,
@@ -63,9 +66,25 @@ class _TabbedPageState extends State<TabbedPage>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [MySticksPage(), const Text("아직 준비 중입니다.")],
+        children: [
+          MySticksPage(key: _mySticksPageState),
+          const Text("아직 준비 중입니다.")
+        ],
       ),
-      floatingActionButton: _currentIndex == 0 ? FloatingActionButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const AddStickPage()));}, backgroundColor: Colors.blue, child: const Icon(Icons.add),) : null,
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddStickPage())).then((_) {
+                  _mySticksPageState.currentState!.getSticks();
+                });
+              },
+              backgroundColor: Colors.blue,
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }
