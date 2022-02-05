@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 
 import '../models/light.dart';
@@ -19,6 +20,11 @@ class StickView extends StatefulWidget {
 }
 
 class _StickViewState extends State<StickView> {
+  static const int btnShowingTimeInMs = 5000;
+  bool showBtn = true;
+  bool locked = false;
+  CancelableOperation timer = CancelableOperation.fromFuture(Future.value());
+
   @override
   void initState() {
     super.initState();
@@ -29,14 +35,48 @@ class _StickViewState extends State<StickView> {
     super.dispose();
   }
 
+  void _runTimer() {
+    timer.cancel();
+    setState(() {
+      showBtn = true;
+    });
+    timer = CancelableOperation.fromFuture(
+        Future.delayed(const Duration(milliseconds: btnShowingTimeInMs), () {
+      setState(() {
+        showBtn = false;
+      });
+    }));
+  }
+
+  void onFABPressed() {
+    setState(() {
+      locked = !locked;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final PageController controller = PageController();
 
-    return PageView(
-      scrollDirection: Axis.horizontal,
-      controller: controller,
-      children: widget.stick.lightList.map((ll) => ll.getWidget()).toList(),
+    return Scaffold(
+      body: InkWell(
+          child: PageView(
+            physics: locked ? const NeverScrollableScrollPhysics() : null,
+            scrollDirection: Axis.horizontal,
+            controller: controller,
+            children:
+                widget.stick.lightList.map((ll) => ll.getWidget()).toList(),
+          ),
+          onTap: _runTimer),
+      floatingActionButton: AnimatedOpacity(
+          opacity: showBtn ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 500),
+          child: FloatingActionButton(
+            backgroundColor: locked ? Colors.yellow : Colors.grey,
+            child: Icon(
+                locked ? Icons.lock_outline_rounded : Icons.lock_open_rounded),
+            onPressed: onFABPressed,
+          )),
     );
   }
 }
