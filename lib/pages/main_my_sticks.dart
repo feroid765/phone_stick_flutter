@@ -26,8 +26,8 @@ class MySticksPage extends StatefulWidget {
 class MySticksPageState extends State<MySticksPage> {
   List<Stick> sticks = [];
 
-  List<Widget> _getListItems() {
-    return sticks.map((stick) => Text(stick.name)).toList();
+  List<Widget> _getListItems(BuildContext context) {
+    return sticks.map((stick) => stick.getWidget(context)).toList();
   }
 
   void getSticks() async {
@@ -46,6 +46,6 @@ class MySticksPageState extends State<MySticksPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(children: _getListItems());
+    return ListView(children: _getListItems(context));
   }
 }
