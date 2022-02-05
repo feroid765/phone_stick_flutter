@@ -1,4 +1,5 @@
 import 'package:async/async.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../models/light.dart';
@@ -70,11 +71,16 @@ class _StickViewState extends State<StickView> {
           onTap: _runTimer),
       floatingActionButton: AnimatedOpacity(
           opacity: showBtn ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 200),
           child: FloatingActionButton(
-            backgroundColor: locked ? Colors.yellow : Colors.grey,
-            child: Icon(
-                locked ? Icons.lock_outline_rounded : Icons.lock_open_rounded),
+            backgroundColor: locked ? const Color(0xFFFAFAFA) : const Color(0xFFE0E0E0),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            child: locked
+                ? const Icon(Icons.lock_outline_rounded,
+                    color: Color(0xFFFBC02D))
+                : const Icon(Icons.lock_open_rounded, color: Colors.grey),
+            elevation: 0,
             onPressed: onFABPressed,
           )),
     );
