@@ -32,7 +32,7 @@ class MySticksPageState extends State<MySticksPage> {
 
   void getSticks() async {
     var dbProvider = DbProvider();
-    var result = await dbProvider.getSticks();
+    var result = await dbProvider.getSticks(includeLights: true);
     setState(() {
       sticks = result;
     });

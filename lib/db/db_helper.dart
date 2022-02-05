@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../models/light.dart';
@@ -6,21 +8,33 @@ import 'db_provider.dart';
 
 extension DbHelperOnSticks on DbProvider {
   Future<List<Stick>> getSticks({bool includeLights = false}) async {
-    if (includeLights) {
-      throw Exception("Not Implemented. : getSticks with Lights");
-    }
-
     var db = await getDb();
     final List<Map<String, dynamic>> maps =
         await db.query('sticks', columns: ['id', 'name', 'type']);
 
-    return List.generate(maps.length, (i) {
-      return Stick(
-          id: maps[i]['id'],
-          name: maps[i]['name'],
-          type: maps[i]['type'],
-          lightList: []);
-    });
+    Map<String, Stick> idToStick = {};
+
+    for (var map in maps) {
+      final Stick stick = Stick(
+          id: map['id'], name: map['name'], type: map['type'], lightList: []);
+      idToStick[stick.id] = stick;
+    }
+
+    if (includeLights) {
+      final List<Map<String, dynamic>> lightMaps =
+          await db.query('lights', orderBy: 'stick_id, idx');
+
+      for (var map in lightMaps) {
+        final Light light = Light(
+            stickId: map['stick_id'],
+            idx: map['idx'],
+            color: Color(map['color']),
+            name: map['name']);
+        idToStick[light.stickId]!.lightList.add(light);
+      }
+    }
+
+    return idToStick.values.toList();
   }
 
   Future insertStick(Stick stick) async {
