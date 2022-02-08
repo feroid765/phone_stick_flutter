@@ -8,8 +8,9 @@ import '../models/light.dart';
 import '../models/stick.dart';
 
 extension LightToWidget on Light {
-  ListTile getWidget() {
+  ListTile getWidget(Key key) {
     return ListTile(
+        key: key,
         title: Text(name),
         leading: Container(height: 24.0, width: 24.0, color: color));
   }
@@ -36,11 +37,8 @@ class _AddStickPageState extends State<AddStickPage> {
   }
 
   void _addLight(String name) {
-    Light newLight = Light(
-        stickId: _stick.id,
-        idx: _stick.lightList.length,
-        name: name,
-        color: _pickerColor);
+    Light newLight =
+        Light(stickId: _stick.id, idx: -1, name: name, color: _pickerColor);
     setState(() => _stick.lightList.add(newLight));
   }
 
@@ -99,6 +97,7 @@ class _AddStickPageState extends State<AddStickPage> {
   void _onAddBtnPressed() {
     if (_formKey.currentState!.validate()) {
       var dbProvider = DbProvider();
+      _stick.lightList.asMap().forEach((idx, light) => {light.idx = idx});
       dbProvider.insertStick(_stick);
       Navigator.pop(context);
     }
@@ -138,18 +137,21 @@ class _AddStickPageState extends State<AddStickPage> {
                     ),
                     const Divider(),
                     const Text('색깔 목록'),
-                    Expanded(
-                        child: ListView(
+                    Flexible(
+                        child: ReorderableListView(
+                            shrinkWrap: true,
+                            onReorder: (int oldIndex, int newIndex) {},
                             children: _stick.lightList
-                                    .map((ll) => ll.getWidget())
-                                    .toList() +
-                                [
-                                  addListTile(() async {
-                                    await showDialog(
-                                        context: context,
-                                        builder: _alertDialogBuilder);
-                                  })
-                                ])),
+                                .asMap()
+                                .entries
+                                .map((MapEntry mapEntry) => (mapEntry.value
+                                        as Light)
+                                    .getWidget(Key(mapEntry.key.toString())))
+                                .toList())),
+                    addListTile(() async {
+                      await showDialog(
+                          context: context, builder: _alertDialogBuilder);
+                    })
                   ])),
         ));
   }
