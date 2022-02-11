@@ -16,6 +16,15 @@ extension LightToWidget on Light {
   }
 }
 
+enum AlertDialogMode { add, modify }
+
+class AlertDialogParam {
+  final AlertDialogMode alertDialogMode;
+  final int lightIndex;
+
+  const AlertDialogParam(this.alertDialogMode, this.lightIndex);
+}
+
 class AddStickPage extends StatefulWidget {
   const AddStickPage({Key? key}) : super(key: key);
 
@@ -42,6 +51,13 @@ class _AddStickPageState extends State<AddStickPage> {
     setState(() => _stick.lightList.add(newLight));
   }
 
+  void _modifyLight(String name, int lightIndex) {
+    setState(() {
+      _stick.lightList[lightIndex].color = _pickerColor;
+      _stick.lightList[lightIndex].name = name;
+    });
+  }
+
   String? _onLightValidate(String? value) {
     if (value == null || value.isEmpty) {
       return "색깔의 이름은 필수로 입력해야 합니다.";
@@ -60,7 +76,8 @@ class _AddStickPageState extends State<AddStickPage> {
     }
   }
 
-  AlertDialog _alertDialogBuilder(BuildContext context) {
+  AlertDialog _alertDialogBuilder(
+      BuildContext context, AlertDialogParam param) {
     return AlertDialog(
         title: const Text('추가할 색깔 선택하기'),
         content: Form(
@@ -83,7 +100,9 @@ class _AddStickPageState extends State<AddStickPage> {
                           enableAlpha: false,
                           onColorChanged: _changeColor)),
                   TextButton(
-                    child: const Text('색깔 추가하기'),
+                    child: param.alertDialogMode == AlertDialogMode.add
+                        ? const Text('색깔 추가하기')
+                        : const Text('색깔 수정하기'),
                     onPressed: () {
                       if (_dialogFormKey.currentState!.validate()) {
                         _addLight(_lightName);
@@ -150,7 +169,9 @@ class _AddStickPageState extends State<AddStickPage> {
                                 .toList())),
                     addListTile(() async {
                       await showDialog(
-                          context: context, builder: _alertDialogBuilder);
+                          context: context,
+                          builder: (context) => _alertDialogBuilder(context,
+                              const AlertDialogParam(AlertDialogMode.add, -1)));
                     })
                   ])),
         ));
