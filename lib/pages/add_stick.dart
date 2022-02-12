@@ -26,9 +26,9 @@ enum AlertDialogMode { add, modify }
 
 class AlertDialogParam {
   final AlertDialogMode alertDialogMode;
-  final int lightIndex;
+  final Light? light;
 
-  const AlertDialogParam(this.alertDialogMode, this.lightIndex);
+  const AlertDialogParam(this.alertDialogMode, this.light);
 }
 
 class AddStickPage extends StatefulWidget {
@@ -100,9 +100,11 @@ class _AddStickPageState extends State<AddStickPage> {
                     children: <Widget>[
                   const Text('색깔 이름'),
                   TextFormField(
-                      decoration: const InputDecoration(
-                          hintText: "캐릭터 이름, 유닛 이름등의 색깔 이름을 입력해주세요!"),
-                      validator: _onLightValidate),
+                    decoration: const InputDecoration(
+                        hintText: "캐릭터 이름, 유닛 이름등의 색깔 이름을 입력해주세요!"),
+                    validator: _onLightValidate,
+                    initialValue: param.light?.name,
+                  ),
                   const Divider(),
                   const Text('색깔 선택'),
                   Container(
@@ -117,7 +119,11 @@ class _AddStickPageState extends State<AddStickPage> {
                         : const Text('색깔 수정하기'),
                     onPressed: () {
                       if (_dialogFormKey.currentState!.validate()) {
-                        _addLight(_lightName);
+                        if (param.alertDialogMode == AlertDialogMode.add) {
+                          _addLight(_lightName);
+                        } else {
+                          _modifyLight(_lightName, param.light!);
+                        }
                         Navigator.pop(context);
                       }
                     },
@@ -134,19 +140,19 @@ class _AddStickPageState extends State<AddStickPage> {
     }
   }
 
-  ListTile getLightWidget(Key key, Light light) {
+  Widget getLightWidget(Key key, Light light, BuildContext context) {
     return ListTile(
       key: key,
       title: Text(light.name),
       leading: Container(height: 24.0, width: 24.0, color: light.color),
-      trailing: Row(
-        children: const <Widget>[
-          IconButton(
-            icon: FaIcon(FontAwesomeIcons.pen),
-            onPressed: null,
-          ),
-          IconButton(icon: Icon(Icons.delete), onPressed: null)
-        ],
+      trailing: IconButton(
+        icon: const FaIcon(FontAwesomeIcons.pen),
+        onPressed: () async {
+          await showDialog(
+              context: context,
+              builder: (context) => _alertDialogBuilder(
+                  context, AlertDialogParam(AlertDialogMode.modify, light)));
+        },
       ),
     );
   }
@@ -192,15 +198,18 @@ class _AddStickPageState extends State<AddStickPage> {
                             children: _stick.lightList
                                 .asMap()
                                 .entries
-                                .map((MapEntry mapEntry) => (mapEntry.value
-                                        as Light)
-                                    .getWidget(Key(mapEntry.key.toString())))
+                                .map((MapEntry mapEntry) => getLightWidget(
+                                    Key(mapEntry.key.toString()),
+                                    mapEntry.value as Light,
+                                    context))
                                 .toList())),
                     addListTile(() async {
                       await showDialog(
                           context: context,
-                          builder: (context) => _alertDialogBuilder(context,
-                              const AlertDialogParam(AlertDialogMode.add, -1)));
+                          builder: (context) => _alertDialogBuilder(
+                              context,
+                              const AlertDialogParam(
+                                  AlertDialogMode.add, null)));
                     })
                   ])),
         ));
