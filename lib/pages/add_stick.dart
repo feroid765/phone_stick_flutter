@@ -64,6 +64,12 @@ class _AddStickPageState extends State<AddStickPage> {
     });
   }
 
+  void _removeLight(Light target) {
+    setState(() {
+      _stick.lightList.remove(target);
+    });
+  }
+
   String? _onLightValidate(String? value) {
     if (value == null || value.isEmpty) {
       return "색깔의 이름은 필수로 입력해야 합니다.";
@@ -126,6 +132,23 @@ class _AddStickPageState extends State<AddStickPage> {
       dbProvider.insertStick(_stick);
       Navigator.pop(context);
     }
+  }
+
+  ListTile getLightWidget(Key key, Light light) {
+    return ListTile(
+      key: key,
+      title: Text(light.name),
+      leading: Container(height: 24.0, width: 24.0, color: light.color),
+      trailing: Row(
+        children: const <Widget>[
+          IconButton(
+            icon: FaIcon(FontAwesomeIcons.pen),
+            onPressed: null,
+          ),
+          IconButton(icon: Icon(Icons.delete), onPressed: null)
+        ],
+      ),
+    );
   }
 
   @override
