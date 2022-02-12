@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:phone_stick_flutter/db/db_helper.dart';
 import 'package:phone_stick_flutter/db/db_provider.dart';
 
@@ -10,9 +11,14 @@ import '../models/stick.dart';
 extension LightToWidget on Light {
   ListTile getWidget(Key key) {
     return ListTile(
-        key: key,
-        title: Text(name),
-        leading: Container(height: 24.0, width: 24.0, color: color));
+      key: key,
+      title: Text(name),
+      leading: Container(height: 24.0, width: 24.0, color: color),
+      trailing: const IconButton(
+        icon: FaIcon(FontAwesomeIcons.pen),
+        onPressed: null,
+      ),
+    );
   }
 }
 
