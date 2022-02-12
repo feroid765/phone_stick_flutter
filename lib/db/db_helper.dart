@@ -47,6 +47,20 @@ extension DbHelperOnSticks on DbProvider {
       Future.wait(lightQueryOpers);
     });
   }
+
+  Future updateStick(Stick stick) async {
+    var db = await getDb();
+
+    await db.transaction((txn) async {
+      await txn.update('sticks', stick.toMap(),
+          where: '"id" = ?', whereArgs: [stick.id]);
+      await txn
+          .delete('lights', where: '"stick_id" = ?', whereArgs: [stick.id]);
+      var lightQueryOpers =
+          stick.lightList.map((light) => txn.insert('lights', light.toMap()));
+      Future.wait(lightQueryOpers);
+    });
+  }
 }
 
 extension DbHelperOnLights on DbProvider {
