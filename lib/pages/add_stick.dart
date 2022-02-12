@@ -57,10 +57,10 @@ class _AddStickPageState extends State<AddStickPage> {
     setState(() => _stick.lightList.add(newLight));
   }
 
-  void _modifyLight(String name, int lightIndex) {
+  void _modifyLight(String name, Light light) {
     setState(() {
-      _stick.lightList[lightIndex].color = _pickerColor;
-      _stick.lightList[lightIndex].name = name;
+      light.color = _pickerColor;
+      light.name = name;
     });
   }
 
