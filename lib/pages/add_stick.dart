@@ -185,7 +185,10 @@ class _AddStickPageState extends State<AddStickPage> {
     return Scaffold(
         appBar: AppBar(title: const Text('폰광봉 만들기'), actions: <Widget>[
           TextButton(
-            child: const Text('완료'),
+            child: const Text(
+              '완료',
+              style: TextStyle(color: Colors.white),
+            ),
             onPressed: _onAddBtnPressed,
           )
         ]),
@@ -196,14 +199,16 @@ class _AddStickPageState extends State<AddStickPage> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Text('폰광봉 이름'),
+                    const Text('폰광봉 이름', style: TextStyle(fontSize: 16)),
                     TextFormField(
                       decoration:
                           const InputDecoration(hintText: "폰광봉의 이름을 입력해주세요!"),
                       validator: _onStickValidate,
                     ),
                     const Divider(),
-                    const Text('색깔 목록'),
+                    const Text('색깔 목록', style: TextStyle(fontSize: 16)),
+                    const Text('색깔을 꾹 누른 뒤 드래그해서 순서를 바꿀 수 있습니다.',
+                        style: TextStyle(color: Colors.black54)),
                     Flexible(
                         child: ReorderableListView(
                             shrinkWrap: true,
