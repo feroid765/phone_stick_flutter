@@ -17,16 +17,26 @@ class AlertDialogParam {
   const AlertDialogParam(this.alertDialogMode, this.light);
 }
 
-class AddStickPage extends StatefulWidget {
-  const AddStickPage({Key? key}) : super(key: key);
+enum PageMode { add, modify }
 
-  @override
-  _AddStickPageState createState() => _AddStickPageState();
+class PageParam {
+  final PageMode pageMode;
+  final Stick? stick;
+
+  const PageParam(this.pageMode, this.stick);
 }
 
-class _AddStickPageState extends State<AddStickPage> {
+class AddModifyStickPage extends StatefulWidget {
+  final PageParam param;
+  const AddModifyStickPage({Key? key, required this.param}) : super(key: key);
+
+  @override
+  _AddModifyStickPageState createState() => _AddModifyStickPageState();
+}
+
+class _AddModifyStickPageState extends State<AddModifyStickPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final Stick _stick = Stick.asDefaultValue();
+  Stick _stick = Stick.asDefaultValue();
   String _lightName = "";
 
   final GlobalKey<FormState> _dialogFormKey = GlobalKey<FormState>();
@@ -139,7 +149,14 @@ class _AddStickPageState extends State<AddStickPage> {
     if (_formKey.currentState!.validate()) {
       var dbProvider = DbProvider();
       _stick.lightList.asMap().forEach((idx, light) => {light.idx = idx});
-      dbProvider.insertStick(_stick);
+      switch (widget.param.pageMode) {
+        case PageMode.add:
+          dbProvider.insertStick(_stick);
+          break;
+        case PageMode.modify:
+          dbProvider.updateStick(_stick);
+          break;
+      }
       Navigator.pop(context);
     }
   }
@@ -173,6 +190,9 @@ class _AddStickPageState extends State<AddStickPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.param.pageMode == PageMode.modify) {
+      _stick = widget.param.stick!;
+    }
   }
 
   @override
@@ -183,15 +203,18 @@ class _AddStickPageState extends State<AddStickPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('폰광봉 만들기'), actions: <Widget>[
-          TextButton(
-            child: const Text(
-              '완료',
-              style: TextStyle(color: Colors.white),
-            ),
-            onPressed: _onAddBtnPressed,
-          )
-        ]),
+        appBar: AppBar(
+            title: Text(
+                widget.param.pageMode == PageMode.add ? '폰광봉 만들기' : '폰광봉 수정하기'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text(
+                  '완료',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: _onAddBtnPressed,
+              )
+            ]),
         body: Container(
           margin: const EdgeInsets.all(10.0),
           child: Form(
@@ -204,6 +227,7 @@ class _AddStickPageState extends State<AddStickPage> {
                       decoration:
                           const InputDecoration(hintText: "폰광봉의 이름을 입력해주세요!"),
                       validator: _onStickValidate,
+                      initialValue: _stick.name,
                     ),
                     const Divider(),
                     const Text('색깔 목록', style: TextStyle(fontSize: 16)),

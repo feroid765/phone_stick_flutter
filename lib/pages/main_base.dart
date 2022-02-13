@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'add_stick.dart';
+import 'add_modify_stick.dart';
 import 'main_my_sticks.dart';
 
 class TabbedPage extends StatefulWidget {
@@ -77,7 +77,8 @@ class _TabbedPageState extends State<TabbedPage>
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const AddStickPage())).then((_) {
+                        builder: (context) => const AddModifyStickPage(
+                            param: PageParam(PageMode.add, null)))).then((_) {
                   _mySticksPageState.currentState!.getSticks();
                 });
               },
