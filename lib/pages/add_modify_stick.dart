@@ -128,7 +128,6 @@ class _AddModifyStickPageState extends State<AddModifyStickPage> {
 
   AlertDialog _deleteAlertDialog(BuildContext context, Light light) {
     return AlertDialog(
-        title: const Text('추가할 색깔 선택하기'),
         content: Text('정말 "${light.name}" 색깔을 삭제하시겠습니까?'),
         actions: <Widget>[
           TextButton(

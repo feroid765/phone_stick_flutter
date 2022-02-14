@@ -61,6 +61,16 @@ extension DbHelperOnSticks on DbProvider {
       Future.wait(lightQueryOpers);
     });
   }
+
+  Future deleteStick(Stick stick) async {
+    var db = await getDb();
+
+    await db.transaction((txn) async {
+      await txn
+          .delete('lights', where: '"stick_id" = ?', whereArgs: [stick.id]);
+      await txn.delete('sticks', where: '"id" = ?', whereArgs: [stick.id]);
+    });
+  }
 }
 
 extension DbHelperOnLights on DbProvider {
